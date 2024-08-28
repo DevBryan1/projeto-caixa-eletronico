@@ -34,5 +34,40 @@ if(isset($_SESSION['banco']) && !empty($_SESSION['banco'])){
     Conta: <?php echo $info['conta'];?><br>
     Saldo: <?php echo $info['saldo'];?><br/>
     <a href="sair.php">Sair</a>
+    <hr>
+    <h3>Movimentação/Extrato</h3>
+
+    <a href="add-transacao.php">Adicionar Transação +</a><br/><br/>
+
+    <table border="1" width="500px">
+        <tr>
+            <th>Data</th>
+            <th>Valor</th>
+        </tr>
+
+    <?php
+        $sql = $pdo->prepare("SELECT * FROM historico WHERE id_conta = :id_conta");
+        $sql->bindValue("id_conta", $id);
+        $sql->execute();
+        
+        if($sql->rowCount() > 0){
+            foreach($sql->fetchAll() as $item){
+                ?>
+                <tr>
+                    <td><?php echo date('d/m/Y H:i', strtotime($item['data_operacao'])); ?></td>
+                    <td>
+                        <?php if($item['tipo'] == 0):  ?>
+                        <span style="color:green;" >R$ <?php echo $item['valor']; ?></td></span>
+                        <?php else: ?>
+                        <span style="color:red;">- R$ <?php echo $item['valor']; ?></td></span>
+                        <?php endif;?>
+                    
+                </tr>
+                <?php
+            }
+        }
+    ?>
+    </table>
+
 </body>
 </html>
